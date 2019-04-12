@@ -1,0 +1,90 @@
+server:
+  port: 8700
+  servlet:
+    context-path: /shirodemo
+
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    #打开Druid监控统计功能
+    #Druid内置提供一个StatFilter，用于统计监控信息
+    #mergeStat(druid.filters.mergeStat=com.alibaba.druid.filter.stat.MergeStatFilter)：SQL合并配置
+    #filters: stat,slf4j,mergeStat
+    druid:
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/shiro-demo?serverTimezone=GMT&useUnicode=true&characterEncoding=utf-8&useSSL=true
+      username: root
+      password: 19970602
+      #最大活跃数
+      max-active: 20
+      #最小活跃数
+      min-idle: 5
+      #初始化数量
+      initial-size: 10
+      #最大等待时间毫秒单位
+      max-wait: 60000
+      #配置监控页面StatViewFilter，默认访问（http://localhost:端口/context-path/druid/login.html）
+      stat-view-servlet:
+        enabled: true
+        #登录名
+        login-username: admin
+        #登录密码
+        login-password: 123456
+        #允许当前本地IP/端口号
+        allow: localhost:9300
+        #不允许重置日志
+        reset-enable: flase
+      filter:
+        stat:
+        #开启slf4j日志
+        slf4j:
+          enabled: true
+          #所有DataSource相关的日志
+          result-set-log-enabled: true
+          #所有连接相关的日志
+          connection-log-enabled: true
+          #所有连接发生异常的日志
+          connection-log-error-enabled: true
+          #所有Statement相关的日志
+          statement-log-enabled: true
+          #所有Statement发生异常相关的日志
+          statement-log-error-enabled: true
+
+###Redis配置
+  redis:
+    #Redis服务器地址
+    host: 127.0.0.1
+    #Redis的服务器端口号
+    port: 6379
+    password: 19970602
+    #连接超时时间（毫秒）
+    timeout: 400000
+    lettuce:
+      pool:
+        #连接池最大连接数（负数：表示无限制）
+        max-active: -1
+        #连接池最小空闲连接
+        min-idle: 0
+        #连接池最大空闲连接
+        max-idle: 8
+        #连接池最大阻塞等待时间（使用复制表示没有限制）
+        max-wait: -1
+
+
+
+#日志配置
+logging:
+  file: log/server.log
+  level:
+    com:
+      wwr:
+        permission:
+          druid: debug
+mybatis:
+  mapper-locations: classpath:mapper/*

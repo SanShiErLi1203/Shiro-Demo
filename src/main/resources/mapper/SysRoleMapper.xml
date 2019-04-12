@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudta.shirodemo.dao.SysRoleDao">
+    <resultMap id="sysRoleMap" type="com.cloudta.shirodemo.pojo.SysRole">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <sql id="baseSysRoleSql">
+        `id`, `name`, `status`, `create_time`
+    </sql>
+
+    <select id="findSysRoleById" parameterType="Integer" resultMap="sysRoleMap">
+        SELECT
+        <include refid="baseSysRoleSql" />
+        FROM
+        sys_role
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="findSysRoleByName" parameterType="String" resultMap="sysRoleMap">
+        SELECT
+        <include refid="baseSysRoleSql" />
+        FROM
+        sys_role
+        WHERE `name` = #{name}
+    </select>
+
+    <select id="findSysRoleByIds" resultMap="sysRoleMap">
+        SELECT
+        <include refid="baseSysRoleSql" />
+        FROM
+        sys_role
+        WHERE id IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="countSysRoleByName" parameterType="String" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_role
+        WHERE `name` = #{name}
+    </select>
+
+    <select id="countSysRoleById" parameterType="Integer" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_role
+        WHERE `id` = #{id}
+    </select>
+
+    <insert id="insertSysRole" parameterType="com.cloudta.shirodemo.pojo.SysRole">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO sys_role (
+          <include refid="baseSysRoleSql"/>
+        )
+        VALUES(
+          NULL, #{name}, 0, #{token}, #{createTime}
+        )
+    </insert>
+
+    <!--使用set标签，自动帮我们去掉最后一个 " , "-->
+    <update id="updateSysRole" parameterType="com.cloudta.shirodemo.pojo.SysRole">
+        UPDATE
+        sys_role
+        <set>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudta.shirodemo.dao.SysUserDao">
+    <resultMap id="sysUserMap" type="com.cloudta.shirodemo.pojo.SysUser">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="token" property="token" />
+        <result column="salt" property="salt" />
+        <result column="status" property="status" />
+        <result column="register_time" property="registerTime" />
+        <result column="last_login_time" property="lastLoginTime" />
+    </resultMap>
+
+    <sql id="baseSysUserSql">
+        `id`, `username`, `password`, `token`, `salt`, `status`, `register_time`, `last_login_time`
+    </sql>
+
+    <select id="findSysUserById" parameterType="Integer" resultMap="sysUserMap">
+        SELECT
+        <include refid="baseSysUserSql" />
+        FROM
+        sys_user
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="findSysUserIdByUsername" parameterType="String" resultType="Integer">
+        SELECT
+          id
+        FROM
+        sys_user
+        WHERE `username` = #{username}
+    </select>
+
+    <select id="findSysUserByUsername" parameterType="String" resultMap="sysUserMap">
+        SELECT
+          <include refid="baseSysUserSql" />
+        FROM
+          sys_user
+        WHERE `username` = #{username}
+    </select>
+
+    <select id="findSysUserByToken" parameterType="String" resultMap="sysUserMap">
+        SELECT
+        <include refid="baseSysUserSql" />
+        FROM
+        sys_user
+        WHERE `token` = #{token}
+    </select>
+
+    <select id="countSysUserByUsername" parameterType="String" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_user
+        WHERE `username` = #{username}
+    </select>
+
+    <select id="countSysUserById" parameterType="Integer" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_user
+        WHERE `id` = #{id}
+    </select>
+
+    <insert id="insertSysUser" parameterType="com.cloudta.shirodemo.pojo.SysUser">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+       INSERT INTO sys_user (
+          <include refid="baseSysUserSql"/>
+       )
+       VALUES(
+          NULL, #{username}, #{password}, #{token}, #{salt}, 2, #{registerTime}, NULL
+        )
+    </insert>
+
+    <!--使用set标签，自动帮我们去掉最后一个 " , "-->
+    <update id="updateSysUser" parameterType="com.cloudta.shirodemo.pojo.SysUser">
+        UPDATE
+          sys_user
+        <set>
+            <if test="username != null">
+                `username` = #{username},
+            </if>
+            <if test="password != null">
+                `password` = #{password},
+            </if>
+            <if test="token != null">
+                `token` = #{token},
+            </if>
+            <if test="salt != null">
+                `salt` = #{salt},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="registerTime != null">
+                `register_time` = #{registerTime},
+            </if>
+            <if test="lastLoginTime != null">
+                `last_login_time` = #{lastLoginTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

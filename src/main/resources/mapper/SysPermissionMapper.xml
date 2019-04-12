@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cloudta.shirodemo.dao.SysPermissionDao">
+    <resultMap id="sysPermissionMap" type="com.cloudta.shirodemo.pojo.SysPermission">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="url" property="url" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <sql id="baseSysPermissionSql">
+        `id`, `name`, `url`, `status`, `create_time`
+    </sql>
+
+    <select id="findSysPermissionById" parameterType="Integer" resultMap="sysPermissionMap">
+        SELECT
+        <include refid="baseSysPermissionSql" />
+        FROM
+        sys_permission
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="findSysPermissionByName" parameterType="String" resultMap="sysPermissionMap">
+        SELECT
+          <include refid="baseSysPermissionSql" />
+        FROM
+        sys_permission
+        WHERE `name` = #{name}
+    </select>
+
+    <select id="findSysPermissionByIds" resultMap="sysPermissionMap">
+        SELECT
+        <include refid="baseSysPermissionSql" />
+        FROM
+        sys_permission
+        WHERE id IN
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="countSysPermissionByName" parameterType="String" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_permission
+        WHERE `name` = #{name}
+    </select>
+
+    <select id="countSysPermissionById" parameterType="Integer" resultType="Integer">
+        SELECT
+          COUNT(1)
+        FROM
+          sys_permission
+        WHERE `id` = #{id}
+    </select>
+
+    <insert id="insertSysPermission" parameterType="com.cloudta.shirodemo.pojo.SysPermission">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO sys_permission (
+          <include refid="baseSysPermissionSql"/>
+        )
+        VALUES(
+          NULL, #{name}, #{url}, 0, #{createTime}
+        )
+    </insert>
+
+    <!--使用set标签，自动帮我们去掉最后一个 " , "-->
+    <update id="updateSysPermission" parameterType="com.cloudta.shirodemo.pojo.SysPermission">
+        UPDATE
+        sys_permission
+        <set>
+            <if test="name != null">
+                `name` = #{name},
+            </if>
+            <if test="url != null">
+                `url` = #{url},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="createTime != null">
+                `create_time` = #{createTime},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
